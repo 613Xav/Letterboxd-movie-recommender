@@ -1,0 +1,15 @@
+name: letterboxd
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - scikit-surprise       # pulls a compatible wheel
+  - pip:
+    # e.g. some-package-not-on-conda
+    - aiohttp
+    - beautifulsoup4
+    - lxml
+    - pandas
+    - openpyxl
+    - psycopg2              

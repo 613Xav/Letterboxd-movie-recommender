@@ -1,0 +1,16 @@
+FROM continuumio/miniconda3
+
+WORKDIR /app
+
+COPY environment.yml .
+
+RUN conda env create -f environment.yml \
+ && conda clean -afy
+
+# *** Add this block ***
+ENV PATH=/opt/conda/envs/letterboxd/bin:$PATH
+
+COPY . .
+
+# Now `python` is the one in /opt/conda/envs/letterboxd/
+CMD ["python", "readRatings.py"]
