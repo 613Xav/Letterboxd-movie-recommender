@@ -13,4 +13,6 @@ ENV PATH=/opt/conda/envs/letterboxd/bin:$PATH
 COPY . .
 
 # Now `python` is the one in /opt/conda/envs/letterboxd/
-CMD ["python", "readRatings.py"]
+CMD ["sh"]
+#CMD ["python", "readRatings.py"]
+
