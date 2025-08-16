@@ -1,9 +1,11 @@
 name: letterboxd
 channels:
+  - conda-forge
 dependencies:
   - python=3.11
   - pip
-  - psycopg           # ← psycopg v3 from conda-forge (prebuilt)
+  - psycopg2           # ← psycopg v3 from conda-forge (prebuilt)
+  - scikit-surprise
   - libpq             # optional but nice to pin the client lib explicitly
   - ca-certificates   # good hygiene in containers
   - pip:
@@ -12,5 +14,4 @@ dependencies:
       - lxml
       - pandas
       - openpyxl
-      - scikit-surprise
       # (keep any other pip-only deps here)
