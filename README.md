@@ -15,7 +15,7 @@
 
 ### Next immediate steps 
 1. Increase `ratings.csv` size for more accuracy.  
-2. Implement a similarity algorithm according to user type (Casual, Amateur, Adavanced)  
+2. Implement a similarity algorithm according to user type (Casual, Amateur, Advanced)  
 
 
  
