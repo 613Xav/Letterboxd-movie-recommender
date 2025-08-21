@@ -4,11 +4,11 @@
 **Creating a rating dataset** ➜ **Implementing a similarity algorithm** ➜ **Creating a movie metadata table** ➜ **Adding filtering options** ➜ **Building a front-end interface**
 
 ### Checklist
-- [X] Create a clean, normalized rating dataset (train / test split)
-- [ ] Implement similarity algorithm (cosine / Pearson)
+- [X] Create a clean, normalized rating dataset 
+- [ ] Implement similarity algorithm 
 - [ ] Build movie metadata table (title, genres, year, cast, runtime, etc.)
 - [ ] Add filtering by genre, year, rating, runtime
-- [ ] Build front-end UI and integrate with 
+- [ ] Build front-end UI  
 
 ### Quick links
 - Data created so far: [Project/data](Project/data)
