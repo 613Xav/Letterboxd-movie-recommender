@@ -4,5 +4,5 @@ __pycache__/
 
 # Sensitive files
 Project/database.py
-#Project/databaselogin.txt
+Project/databaselogin.txt
 
