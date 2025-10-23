@@ -4,8 +4,6 @@ import pprint
 from aiohttp import ClientSession, TCPConnector
 from bs4 import BeautifulSoup
 
-
-
 def stars_to_score(star_str: str) -> int | None:
     """
     Convert a Letterboxd star string (e.g. "★★★½") into a 0–10 integer.
@@ -15,7 +13,6 @@ def stars_to_score(star_str: str) -> int | None:
     full = star_str.count("★")
     half = star_str.count("½")
     return full*2 + half
-
 
 async def fetch_rating_info(
     username: str,
@@ -45,7 +42,6 @@ async def fetch_rating_info(
         root_soup = BeautifulSoup(text, "lxml")
         name_tag = root_soup.select_one("nav.profile-navigation h1.title-3")
         display_name = name_tag.get_text(strip=True) if name_tag else None
-      
 
         # 2) Sequentially page through film‑list pages
         for page in range(1, max_pages + 1):
@@ -59,79 +55,70 @@ async def fetch_rating_info(
 
             if status != 200:
                 print(f"[WARN] Non‑200 response on page {page}")
-        
+                break
 
             soup = BeautifulSoup(page_html, "lxml")
 
-            ul = soup.find("ul", class_="poster-list -p70 -grid clear")
+            # Updated selector for new structure
+            ul = soup.find("ul", class_="grid -p70")
             if not ul:
+                print(f"[DEBUG] No grid found on page {page}")
                 break
 
-            items = ul.find_all("li", class_="poster-container")
-            #print(items)
+            items = ul.find_all("li", class_="griditem")
             if not items:
+                print(f"[DEBUG] No grid items found on page {page}")
                 break
 
-            #filling up film info
+            # Filling up film info
             for li in items:
-                #print(li)
-                info = li.find("div", class_="really-lazy-load poster film-poster linked-film-poster")
-                if not info:
-                    print("not info")
+                # Get film info from the react component div
+                react_component = li.find("div", class_="react-component")
+                if not react_component:
+                    print("No react component found")
                     continue
-                slug = info["data-film-slug"]
+                
+                # Get slug from data-item-slug attribute
+                slug = react_component.get("data-item-slug")
+                if not slug:
+                    print("No slug found")
+                    continue
 
-                # rating
-                ratingLocation = li.find("span", class_="rating")
-                rating = stars_to_score(ratingLocation.get_text(strip=True)) if ratingLocation else None
+                # Get title from data-item-name attribute
+                title = react_component.get("data-item-name")
 
-                # liked?
-                liked = bool(li.find("span", class_="like liked-micro has-icon icon-liked icon-16"))
-
-                # poster URL
-               # img = li.find("img")
-               # poster_url = img["src"] if img and img.has_attr("src") else None
+                # Get rating and liked status from poster-viewingdata
+                viewing_data = li.find("p", class_="poster-viewingdata")
+                rating = None
+                liked = False
+                
+                if viewing_data:
+                    # Get rating
+                    rating_span = viewing_data.find("span", class_="rating")
+                    if rating_span:
+                        rating_text = rating_span.get_text(strip=True)
+                        rating = stars_to_score(rating_text)
+                    
+                    # Check if liked
+                    liked_span = viewing_data.find("span", class_="like")
+                    liked = bool(liked_span and "liked-micro" in liked_span.get("class", []))
 
                 all_films.append({
-                    "slug":         slug,
-                    "title":        None,
-                    "poster_url":   None,
+                    "slug": slug,
+                    "title": title,
+                    "poster_url": None,
                     "display_name": display_name,
-                    "rating":       rating,
-                    "liked":        liked,
-                    "year":         None,
-                    "page":         page
+                    "rating": rating,
+                    "liked": liked,
+                    "year": None,
+                    "page": page
                 })
-             
-            """
-        if fetch_years and all_films:
-            # A) make a semaphore to limit concurrency
-            year_sem = asyncio.Semaphore(concurrency)
-            # B) helper to fetch & parse one film
-            async def sem_fetch_year(film):
-                async with year_sem:
-                    detail_url = f"https://letterboxd.com/film/{film['slug']}/"
-                    async with session.get(detail_url) as resp:
-                        if resp.status == 200:
-                            html = await resp.text()
-                            film["year"] = parse_year_from_html(html)
-                        else:
-                            film["year"] = None
-
-
-            # C) schedule one task per film
-            tasks = [asyncio.create_task(sem_fetch_year(f)) for f in all_films]
-        
-
-            # D) wait for them all to finish
-            await asyncio.gather(*tasks
-            """
 
         return all_films
-    
+
 async def main():
     films = await fetch_rating_info(
-        username= "gab_m"
+        username="613dbx"
     )
     pprint.pprint(films)
     
